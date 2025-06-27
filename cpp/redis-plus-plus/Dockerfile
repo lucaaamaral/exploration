@@ -29,15 +29,14 @@ RUN mkdir -p /app/lib/redis-plus-plus/build && \
 FROM redis_plus_plus AS example
 
 # Build the exploration code
-COPY src /app/src
-COPY CMakeLists.txt /app/
-RUN mkdir -p /app/build && \
-    cd /app/build && \
+COPY test /app/test
+RUN mkdir -p /app/test/build && \
+    cd /app/test/build && \
     cmake .. && \
     make -j$(nproc)
 
 # Set the entrypoint to run the basic example
-ENTRYPOINT ["/app/build/basic_example"]
+ENTRYPOINT ["/app/test/build/basic_example"]
 
 FROM redis_plus_plus AS benchmark
 

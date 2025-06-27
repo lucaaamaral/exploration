@@ -28,16 +28,14 @@ RUN mkdir -p /app/lib/redis-cpp/build && \
 FROM redis_cpp AS example
 
 # Build the exploration code
-COPY src /app/src
-COPY CMakeLists.txt /app/
-RUN mkdir -p /app/build && \
-    cd /app/build && \
+COPY test /app/test
+RUN mkdir -p /app/test/build && \
+    cd /app/test/build && \
     cmake .. && \
     make -j$(nproc)
 
 # Set the entrypoint to run the basic example
-# Note: This assumes a Redis server is running and accessible
-ENTRYPOINT ["/app/build/basic_example"]
+ENTRYPOINT ["/app/test/build/basic_example"]
 
 FROM redis_cpp AS benchmark
 
