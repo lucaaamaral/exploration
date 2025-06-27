@@ -51,6 +51,17 @@ test: start-redis
 		redis-cpp-exploration
 	@echo "Test for redis-cpp completed"
 
+benchmark: start-redis
+	@echo "Building Docker image for redis-cpp benchmark..."
+	@docker build --target benchmark -t redis-cpp-benchmark .
+	@$(MAKE) prune
+	@echo "Running benchmark for redis-cpp..."
+	@docker run --network redis-network \
+		-e REDIS_HOST=$(REDIS_HOST) \
+		-e REDIS_PORT=$(REDIS_PORT) \
+		redis-cpp-benchmark
+	@echo "Benchmark for redis-cpp completed"
+
 clean:
 	@echo "Cleaning up redis-cpp test containers..."
 	@if docker ps -a | grep -q redis-cpp-exploration; then \

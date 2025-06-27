@@ -38,3 +38,25 @@ RUN mkdir -p /app/build && \
 # Set the entrypoint to run the basic example
 # Note: This assumes a Redis server is running and accessible
 ENTRYPOINT ["/app/build/basic_example"]
+
+FROM redis_cpp AS benchmark
+
+# Install Google Benchmark
+RUN git clone https://github.com/google/benchmark.git /tmp/benchmark \
+    && mkdir -p /tmp/benchmark/build \
+    && cd /tmp/benchmark/build \
+    && cmake .. -DBENCHMARK_ENABLE_GTEST_TESTS=OFF \
+    && make -j$(nproc) \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/benchmark
+
+# Build the benchmark suite
+COPY benchmark /app/benchmark
+RUN mkdir -p /app/benchmark/build && \
+    cd /app/benchmark/build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# Set the entrypoint to run the benchmarks
+ENTRYPOINT ["/app/benchmark/build/redis_cpp_benchmark"]

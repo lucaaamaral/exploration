@@ -51,6 +51,17 @@ test: start-redis
 		redis-plus-plus-exploration
 	@echo "Test for redis-plus-plus completed"
 
+benchmark: start-redis
+	@echo "Building Docker image for redis-plus-plus benchmark..."
+	@docker build --target benchmark -t redis-plus-plus-benchmark .
+	@$(MAKE) prune
+	@echo "Running benchmark for redis-plus-plus..."
+	@docker run --network redis-network \
+		-e REDIS_HOST=$(REDIS_HOST) \
+		-e REDIS_PORT=$(REDIS_PORT) \
+		redis-plus-plus-benchmark
+	@echo "Benchmark for redis-plus-plus completed"
+
 clean:
 	@echo "Cleaning up redis-plus-plus test containers..."
 	@if docker ps -a | grep -q redis-plus-plus-exploration; then \
