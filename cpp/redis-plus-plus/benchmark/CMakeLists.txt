@@ -17,6 +17,24 @@ include_directories(${CMAKE_SOURCE_DIR}/../lib/redis-plus-plus/src)
 add_executable(redis_plus_plus_benchmark
     src/set_benchmark.cpp
     src/get_benchmark.cpp
+    src/del_benchmark.cpp
+    src/incr_benchmark.cpp
+    src/exists_benchmark.cpp
+    src/expire_benchmark.cpp
+    src/ttl_benchmark.cpp
+    src/decr_benchmark.cpp
+    src/hset_benchmark.cpp
+    src/hget_benchmark.cpp
+    src/hmset_benchmark.cpp
+    src/hmget_benchmark.cpp
+    src/lpush_benchmark.cpp
+    src/lpop_benchmark.cpp
+    src/rpush_benchmark.cpp
+    src/rpop_benchmark.cpp
+    src/sadd_benchmark.cpp
+    src/smembers_benchmark.cpp
+    src/scard_benchmark.cpp
+    src/sismember_benchmark.cpp
     # Add more benchmark files for other operations as needed
 )
 
