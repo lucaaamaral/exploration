@@ -3,6 +3,8 @@
 # Configuration variables for Redis connection
 REDIS_HOST ?= redis-server
 REDIS_PORT ?= 6379
+# Configuration for multiple runs
+RUNS ?= 10
 
 .PHONY: all test start-redis stop-redis clean prune help
 
@@ -61,6 +63,29 @@ benchmark: start-redis
 		-e REDIS_PORT=$(REDIS_PORT) \
 		redis-cpp-benchmark
 	@echo "Benchmark for redis-cpp completed"
+
+# Target to run benchmarks multiple times and save results in CSV format
+benchmark-multi: start-redis
+	@echo "Building Docker image for redis-cpp benchmark..."
+	@docker build --target benchmark -t redis-cpp-benchmark .
+	@$(MAKE) prune
+	@echo "Running benchmarks for redis-cpp $(RUNS) times..."
+	@mkdir -p results
+	@for i in $$(seq 1 $(RUNS)); do \
+		echo "Run $$i of $(RUNS)"; \
+		RESULT_FILE="results/redis_cpp_results_run_$$i.csv"; \
+		docker run --network redis-network -v $$(pwd)/results:/results \
+			-e REDIS_HOST=$(REDIS_HOST) \
+			-e REDIS_PORT=$(REDIS_PORT) \
+			redis-cpp-benchmark \
+			--benchmark_out_format=csv --benchmark_out=/$$RESULT_FILE; \
+		if [ $$? -eq 0 ]; then \
+			echo "Run $$i completed. Results saved to $$RESULT_FILE"; \
+		else \
+			echo "Run $$i failed. Check output for errors."; \
+		fi \
+	done
+	@echo "All benchmark runs for redis-cpp completed. Results are stored in the results directory."
 
 clean:
 	@echo "Cleaning up redis-cpp test containers..."
