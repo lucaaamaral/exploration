@@ -89,12 +89,12 @@ benchmark-multi: start-redis
 
 clean:
 	@echo "Cleaning up redis-cpp test containers..."
-	@if docker ps -a | grep -q redis-cpp-exploration; then \
-		CONTAINERS=`docker ps -a | grep redis-cpp-exploration | awk '{print $$1}'`; \
+	@if docker ps -a | grep -q redis-cpp; then \
+		CONTAINERS=`docker ps -a | grep redis-cpp | awk '{print $$1}'`; \
 		docker rm $$CONTAINERS; \
 	fi
 	@echo "Cleaning up redis-cpp test image..."
-	@if docker images | grep -q redis-cpp-exploration; then \
-		docker rmi redis-cpp-exploration; \
+	@if docker images | grep -q redis-cpp; then \
+		docker rmi redis-cpp; \
 	fi
 	@echo "Cleanup debugging complete for redis-cpp"

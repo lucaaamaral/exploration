@@ -89,12 +89,12 @@ benchmark-multi: start-redis
 
 clean:
 	@echo "Cleaning up redis-plus-plus test containers..."
-	@if docker ps -a | grep -q redis-plus-plus-exploration; then \
-		CONTAINERS=`docker ps -a | grep redis-plus-plus-exploration | awk '{print $$1}'`; \
+	@if docker ps -a | grep -q redis-plus-plus; then \
+		CONTAINERS=`docker ps -a | grep redis-plus-plus | awk '{print $$1}'`; \
 		docker rm $$CONTAINERS; \
 	fi
 	@echo "Cleaning up redis-plus-plus test image..."
-	@if docker images | grep -q redis-plus-plus-exploration; then \
-		docker rmi redis-plus-plus-exploration; \
+	@if docker images | grep -q redis-plus-plus; then \
+		docker rmi redis-plus-plus; \
 	fi
 	@echo "Cleanup complete for redis-plus-plus"
