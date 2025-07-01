@@ -16,6 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/redis-plus-plus/src)
 add_executable(poc_main
     src/poc_main.cpp
     src/poc_routines.cpp
+    src/RedisLock.cpp
 )
 
 # Link libraries
