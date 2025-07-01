@@ -59,3 +59,15 @@ RUN mkdir -p /app/benchmark/build && \
 
 # Set the entrypoint to run the benchmarks
 ENTRYPOINT ["/app/benchmark/build/redis_plus_plus_benchmark"]
+
+FROM redis_plus_plus AS poc
+
+# Build the proof of concept code
+COPY poc /app/poc
+RUN mkdir -p /app/poc/build && \
+    cd /app/poc/build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# Set the entrypoint to run the proof of concept
+ENTRYPOINT ["/app/poc/build/poc_main"]
