@@ -38,7 +38,12 @@ void RedisChannelManager::subscribe(const std::string& channel,
                 this->log("INFO", "Subscribed to channel: " + channel);
                 
                 while (this->running_) {
-                    subscriber.consume();
+                    try {
+                        subscriber.consume();
+                    } catch (const sw::redis::TimeoutError& te) {
+                        this->log("INFO", "Timeout waiting for messages on channel " + channel + ": " + te.what());
+                        continue; // Continue the loop to keep subscription active
+                    }
                 }
             } catch (const std::exception& e) {
                 this->log("ERROR", "Error in subscription to channel " + channel + ": " + e.what());

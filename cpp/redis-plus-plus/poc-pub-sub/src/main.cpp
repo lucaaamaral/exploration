@@ -17,11 +17,16 @@ int main() {
     const char* redis_host = std::getenv("REDIS_HOST") ? std::getenv("REDIS_HOST") : "127.0.0.1";
     const char* redis_port = std::getenv("REDIS_PORT") ? std::getenv("REDIS_PORT") : "6379";
     
-    // Construct the connection string for threads to use
-    std::string connection_string = "tcp://" + std::string(redis_host) + ":" + std::string(redis_port);
+    // Configure Redis connection options with timeout
+    sw::redis::ConnectionOptions opts;
+    opts.host = redis_host;
+    opts.port = std::stoi(redis_port);
+    opts.socket_timeout = std::chrono::seconds(5); // Set timeout to 5 seconds
     
     redis_extended::logging::DefaultLogger logger;
-    LOG_MSG("INFO", 0, "Threads will connect to Redis at " + connection_string);
+    LOG_MSG("INFO", 0, "Threads will connect to Redis at " + opts.host + 
+        ":" + std::to_string(opts.port) + " with timeout " + 
+        std::to_string(opts.socket_timeout.count()) + "ms");
 
     // Shared channel for pub/sub operations
     const std::string shared_channel = "data:stream";
@@ -39,14 +44,14 @@ int main() {
 
     // Create publisher threads, each with its own Redis connection
     for (int i = 0; i < num_publishers; ++i) {
-        std::thread pub_thread(publisher_thread, thread_id++, connection_string, shared_channel);
+        std::thread pub_thread(publisher_thread, thread_id++, opts, shared_channel);
         threads.push_back(std::move(pub_thread));
         LOG_MSG("INFO", 0, "Started publisher thread with ID: " + std::to_string(static_cast<int>(thread_id - 1)));
     }
 
     // Create subscriber threads, each with its own Redis connection
     for (int i = 0; i < num_subscribers; ++i) {
-        std::thread sub_thread(subscriber_thread, thread_id++, connection_string, shared_channel);
+        std::thread sub_thread(subscriber_thread, thread_id++, opts, shared_channel);
         threads.push_back(std::move(sub_thread));
         LOG_MSG("INFO", 0, "Started subscriber thread with ID: " + std::to_string(static_cast<int>(thread_id - 1)));
     }

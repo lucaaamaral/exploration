@@ -15,9 +15,9 @@
 #define DELAY 100
 
 // Publisher thread function
-void publisher_thread(uint8_t thread_id, const std::string& connection_string, const std::string& channel) {
-    // Create a unique Redis connection for this thread
-    sw::redis::Redis redis(connection_string);
+void publisher_thread(uint8_t thread_id, sw::redis::ConnectionOptions opts, const std::string& channel) {
+    // Create a unique Redis connection for this thread using provided options
+    sw::redis::Redis redis(opts);
     redis_extended::RedisChannelManager channel_manager(redis, thread_id, new redis_extended::logging::DefaultLogger());
     LOG_MSG("INFO", thread_id, "PUBLISHER: Connected to Redis");
 
@@ -49,9 +49,9 @@ void publisher_thread(uint8_t thread_id, const std::string& connection_string, c
 }
 
 // Subscriber thread function
-void subscriber_thread(uint8_t thread_id, const std::string& connection_string, const std::string& channel) {
-    // Create a unique Redis connection for this thread
-    sw::redis::Redis redis(connection_string);
+void subscriber_thread(uint8_t thread_id, sw::redis::ConnectionOptions opts, const std::string& channel) {
+    // Create a unique Redis connection for this thread using provided options
+    sw::redis::Redis redis(opts);
     redis_extended::RedisChannelManager channel_manager(redis, thread_id, new redis_extended::logging::DefaultLogger());
     LOG_MSG("INFO", thread_id, "SUBSCRIBER: Connected to Redis");
 
