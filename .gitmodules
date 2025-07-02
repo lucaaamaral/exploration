@@ -1,0 +1,9 @@
+[submodule "cpp/redis-plus-plus/lib/redis-plus-plus"]
+	path = cpp/redis-plus-plus/lib/redis-plus-plus
+	url = https://github.com/sewenew/redis-plus-plus.git
+[submodule "cpp/redis-cpp/lib/redis-cpp"]
+	path = cpp/redis-cpp/lib/redis-cpp
+	url = https://github.com/tdv/redis-cpp.git
+[submodule "cpp/json/lib/json"]
+	path = cpp/json/lib/json
+	url = https://github.com/nlohmann/json.git

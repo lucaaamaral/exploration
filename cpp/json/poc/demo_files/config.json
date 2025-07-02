@@ -1,0 +1,18 @@
+{
+    "app_name": "JSON POC App",
+    "version": "1.0.0",
+    "settings": {
+        "debug": true,
+        "log_level": "info"
+    },
+    "users": [
+        {
+            "id": 1,
+            "name": "Alice"
+        },
+        {
+            "id": 2,
+            "name": "Bob"
+        }
+    ]
+}
