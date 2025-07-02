@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.10)
-
 project(RedisCppExploration LANGUAGES CXX)
 
 # Set C++ standard to C++17
