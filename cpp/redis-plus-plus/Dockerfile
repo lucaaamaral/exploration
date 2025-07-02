@@ -62,12 +62,43 @@ ENTRYPOINT ["/app/benchmark/build/redis_plus_plus_benchmark"]
 
 FROM redis_plus_plus AS poc
 
-# Build the proof of concept code
+# Build the proof of concept code for key-value operations
 COPY poc /app/poc
 RUN mkdir -p /app/poc/build && \
     cd /app/poc/build && \
     cmake .. && \
     make -j$(nproc)
 
-# Set the entrypoint to run the proof of concept
+# Set the entrypoint to run the proof of concept for key-value operations
 ENTRYPOINT ["/app/poc/build/poc_main"]
+
+FROM redis_plus_plus AS redis-extended
+# Build and install the redis-extended library
+COPY --link lib/redis-extended /app/lib/redis-extended
+RUN mkdir -p /app/lib/redis-extended/build && \
+    cd /app/lib/redis-extended/build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make install
+
+FROM redis-extended AS poc-pubsub
+
+# Install nlohmann/json for JSON processing
+RUN git clone https://github.com/nlohmann/json.git /tmp/json \
+    && mkdir -p /tmp/json/build \
+    && cd /tmp/json/build \
+    && cmake .. \
+    && make -j$(nproc) \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/json
+
+# Build the proof of concept code for pub/sub operations
+COPY poc-pub-sub /app/poc-pub-sub
+RUN mkdir -p /app/poc-pub-sub/build && \
+    cd /app/poc-pub-sub/build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# Set the entrypoint to run the proof of concept for pub/sub operations
+ENTRYPOINT ["/app/poc-pub-sub/build/pubsub_poc"]
