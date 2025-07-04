@@ -14,16 +14,19 @@ find_package(Threads REQUIRED)
 # Include directories for redis-plus-plus
 include_directories(${CMAKE_SOURCE_DIR}/../lib/redis-plus-plus/src)
 
+# Specify include directories for the benchmark library
+include_directories(${CMAKE_SOURCE_DIR}/../lib/benchmark/include)
+
 # Define include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Define source files
 set(SOURCES
     src/main.cpp
-    src/Statistics.cpp
-    src/CsvExporter.cpp
     src/PublishBenchmark.cpp
     src/SubscribeBenchmark.cpp
+    src/PublishSizeBenchmark.cpp
+    src/SubscribeSizeBenchmark.cpp
 )
 # Note: Header-only implementations for new benchmarks do not need separate source files
 

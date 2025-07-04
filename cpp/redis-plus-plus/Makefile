@@ -117,7 +117,7 @@ poc-pubsub: start-redis
 
 benchmark-time: start-redis
 	@echo "Building Docker image for redis-plus-plus benchmark-time..."
-	@docker build --target benchmark-time -t redis-plus-plus-benchmark-time .
+	@tar -czh . | docker build --target benchmark-time -t redis-plus-plus-benchmark-time -
 	@$(MAKE) prune
 	@echo "Running benchmark-time for redis-plus-plus..."
 	@docker run --network redis-network -v $$(pwd)/results:/app/results \

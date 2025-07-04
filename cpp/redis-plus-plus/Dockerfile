@@ -106,6 +106,7 @@ ENTRYPOINT ["/app/poc-pub-sub/build/pubsub_poc"]
 FROM redis_plus_plus AS benchmark-time
 
 # Build the benchmark-time suite for time consumption analysis of pub/sub operations
+COPY lib/benchmark /app/lib/benchmark
 COPY benchmark-time /app/benchmark-time
 RUN mkdir -p /app/benchmark-time/build && \
     cd /app/benchmark-time/build && \
