@@ -6,7 +6,7 @@ REDIS_PORT ?= 6379
 # Configuration for multiple runs
 RUNS ?= 10
 
-.PHONY: all test start-redis stop-redis clean prune help poc
+.PHONY: all test start-redis stop-redis clean prune help poc benchmark-time
 
 all: help
 
@@ -20,6 +20,7 @@ help:
 	@echo "  prune        - Manually remove Docker containers with hash-only image names and unnamed images"
 	@echo "  poc          - Run proof of concept for redis-plus-plus (key-value operations)"
 	@echo "  poc-pubsub   - Run proof of concept for redis-plus-plus (pub/sub operations)"
+	@echo "  benchmark-time - Run benchmark for redis-plus-plus time consumption (pub/sub operations)"
 	@echo "  help         - Show this help message"
 
 prune:
@@ -66,12 +67,12 @@ benchmark: start-redis
 		redis-plus-plus-benchmark
 	@echo "Benchmark for redis-plus-plus completed"
 
-# Target to run benchmarks multiple times and save results in CSV format
+# Target to run benchmarks multiple times and save results in CSV format with detailed statistics
 benchmark-multi: start-redis
 	@echo "Building Docker image for redis-plus-plus benchmark..."
 	@docker build --target benchmark -t redis-plus-plus-benchmark .
 	@$(MAKE) prune
-	@echo "Running benchmarks for redis-plus-plus $(RUNS) times..."
+	@echo "Running benchmarks for redis-plus-plus $(RUNS) times with detailed reporting..."
 	@mkdir -p results
 	@for i in $$(seq 1 $(RUNS)); do \
 		echo "Run $$i of $(RUNS)"; \
@@ -80,7 +81,10 @@ benchmark-multi: start-redis
 			-e REDIS_HOST=$(REDIS_HOST) \
 			-e REDIS_PORT=$(REDIS_PORT) \
 			redis-plus-plus-benchmark \
-			--benchmark_out_format=csv --benchmark_out=/$$RESULT_FILE; \
+			--benchmark_out_format=csv \
+			--benchmark_out=/$$RESULT_FILE \
+			--benchmark_repetitions=3 \
+			--benchmark_min_time=1s; \
 		if [ $$? -eq 0 ]; then \
 			echo "Run $$i completed. Results saved to $$RESULT_FILE"; \
 		else \
@@ -110,6 +114,17 @@ poc-pubsub: start-redis
 		-e REDIS_PORT=$(REDIS_PORT) \
 		redis-plus-plus-poc-pubsub
 	@echo "Proof of concept for redis-plus-plus (pub/sub operations) completed"
+
+benchmark-time: start-redis
+	@echo "Building Docker image for redis-plus-plus benchmark-time..."
+	@docker build --target benchmark-time -t redis-plus-plus-benchmark-time .
+	@$(MAKE) prune
+	@echo "Running benchmark-time for redis-plus-plus..."
+	@docker run --network redis-network -v $$(pwd)/results:/app/results \
+		-e REDIS_HOST=$(REDIS_HOST) \
+		-e REDIS_PORT=$(REDIS_PORT) \
+		redis-plus-plus-benchmark-time
+	@echo "Benchmark-time for redis-plus-plus completed. Results are stored in the results directory."
 
 clean:
 	@echo "Cleaning up redis-plus-plus test containers..."

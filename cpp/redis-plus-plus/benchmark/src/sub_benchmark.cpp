@@ -11,16 +11,17 @@ static void BM_RedisPlusPlus_Subscribe(benchmark::State& state) {
     std::string connection = "tcp://" + host + ":" + port;
 
     try {
-        // Create two Redis connections: one for publishing, one for subscribing
         sw::redis::Redis redis_pub(connection);
         sw::redis::Redis redis_sub(connection);
         std::string channel = "benchmark:pubsub";
         std::string message = "test_message_for_benchmark";
         std::atomic<long> received_count(0);
+        std::atomic<bool> message_received(false);
 
-        // Subscriber callback to count received messages
-        auto callback = [&received_count](const std::string& chan, const std::string& msg) {
+        // Subscriber callback to count received messages and flag reception
+        auto callback = [&received_count, &message_received](const std::string& chan, const std::string& msg) {
             received_count++;
+            message_received = true;
         };
 
         // Start subscriber in a separate thread
@@ -42,10 +43,15 @@ static void BM_RedisPlusPlus_Subscribe(benchmark::State& state) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         for (auto _ : state) {
+            // Reset reception flag
+            message_received = false;
             // Publish a message
             redis_pub.publish(channel, message);
             // Wait briefly for the message to be received
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            auto start_time = std::chrono::steady_clock::now();
+            while (!message_received && std::chrono::steady_clock::now() - start_time < std::chrono::milliseconds(100)) {
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
+            }
             // Record the received count to prevent optimization
             benchmark::DoNotOptimize(received_count.load());
         }

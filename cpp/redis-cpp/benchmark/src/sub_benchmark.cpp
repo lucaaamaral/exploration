@@ -6,6 +6,7 @@
 #include <atomic>
 #include <thread>
 #include <chrono>
+#include <iostream>
 
 static void BM_RedisCpp_Subscribe(benchmark::State& state) {
     std::string host = std::getenv("REDIS_HOST") ? std::getenv("REDIS_HOST") : "127.0.0.1";
@@ -23,13 +24,33 @@ static void BM_RedisCpp_Subscribe(benchmark::State& state) {
         // Start subscriber in a separate thread
         std::thread sub_thread([&stream_sub, &queue_name, &received_count, &stopped]() {
             try {
-                auto response = rediscpp::execute(*stream_sub, "SUBSCRIBE", queue_name);
+
+                // Send SUBSCRIBE command
+                auto response = rediscpp::execute(*stream_sub, "subscribe", queue_name);
+                
                 while (!stopped) {
-                    rediscpp::value value(*stream_sub);
-                    received_count++;
+                    try {
+                        // Read incoming messages
+                        rediscpp::value value{*stream_sub};
+                        // // Process the response structure as in the example
+                        // std::visit(rediscpp::resp::detail::overloaded{
+                        //     [&received_count](const rediscpp::resp::deserialization::array& arr) {
+                        //         received_count++;
+                        //     },
+                        //     [](const rediscpp::resp::deserialization::error_message& err) {
+                        //         std::cerr << "Error in response: " << err.get() << std::endl;
+                        //     },
+                        //     [](auto const&) {
+                        //         std::cerr << "Unexpected value type in response." << std::endl;
+                        //     }
+                        // }, value.get());
+                    } catch (const std::exception& e) {
+                        std::cerr << "Subscriber read error: " << e.what() << std::endl;
+                        // break;
+                    }
                 }
             } catch (const std::exception& e) {
-                // std::cerr << "Subscriber error: " << e.what() << std::endl;
+                std::cerr << "Subscriber setup error: " << e.what() << std::endl;
             }
         });
 

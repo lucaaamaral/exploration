@@ -102,3 +102,15 @@ RUN mkdir -p /app/poc-pub-sub/build && \
 
 # Set the entrypoint to run the proof of concept for pub/sub operations
 ENTRYPOINT ["/app/poc-pub-sub/build/pubsub_poc"]
+
+FROM redis_plus_plus AS benchmark-time
+
+# Build the benchmark-time suite for time consumption analysis of pub/sub operations
+COPY benchmark-time /app/benchmark-time
+RUN mkdir -p /app/benchmark-time/build && \
+    cd /app/benchmark-time/build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# Set the entrypoint to run the benchmark-time
+ENTRYPOINT ["/app/benchmark-time/build/benchmark_time"]
