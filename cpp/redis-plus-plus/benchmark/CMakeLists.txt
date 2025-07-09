@@ -35,6 +35,8 @@ add_executable(redis_plus_plus_benchmark
     src/smembers_benchmark.cpp
     src/scard_benchmark.cpp
     src/sismember_benchmark.cpp
+    src/pub_benchmark.cpp
+    src/sub_benchmark.cpp
     # Add more benchmark files for other operations as needed
 )
 

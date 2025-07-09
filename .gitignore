@@ -31,3 +31,6 @@ results
 *.exe
 *.out
 *.app
+
+# Python
+venv

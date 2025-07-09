@@ -12,6 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/redis-plus-plus/src)
 set(SOURCES
     Logging.cpp
     RedisKeyManager.cpp
+    RedisChannelManager.cpp
 )
 
 # Create static library
@@ -30,5 +31,8 @@ install(TARGETS redis-extended
         RUNTIME DESTINATION bin)
 
 # Install headers
-install(FILES Logging.h RedisKeyManager.h
-        DESTINATION include/redis-extended)
+install(FILES 
+    Logging.h 
+    RedisKeyManager.h 
+    RedisChannelManager.h
+    DESTINATION include/redis-extended)
