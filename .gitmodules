@@ -7,3 +7,18 @@
 [submodule "cpp/json/lib/json"]
 	path = cpp/json/lib/json
 	url = https://github.com/nlohmann/json.git
+[submodule "cpp/benchmark-goole"]
+	path = cpp/benchmark-goole
+	url = https://github.com/google/benchmark.git
+[submodule "cpp/cpp/benchmark-google"]
+	path = cpp/cpp/benchmark-google
+	url = https://github.com/google/benchmark.git
+[submodule "cpp/benchmark-google"]
+	path = cpp/benchmark-google
+	url = https://github.com/google/benchmark.git
+[submodule "cpp/PcapPlusPlus/external/PcapPlusPlus"]
+	path = cpp/PcapPlusPlus/external/PcapPlusPlus
+	url = https://github.com/seladb/PcapPlusPlus.git
+[submodule "cpp/PcapPlusPlus/external/libpcap"]
+	path = cpp/PcapPlusPlus/external/libpcap
+	url = https://github.com/the-tcpdump-group/libpcap.git
